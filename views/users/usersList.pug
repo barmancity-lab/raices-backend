@@ -1,0 +1,57 @@
+extends ../layout
+block css
+  link(href='/vendor/datatables-plugins/dataTables.bootstrap.css' rel='stylesheet')
+  link(href='/vendor/datatables-responsive/dataTables.responsive.css' rel='stylesheet')
+block content
+  .row
+    .panel-body
+      .col-lg-12
+        h1.page-header Alta /Modificaci&oacute;n usuario
+        button#users-new.btn.btn-default.pull-right Nuevo usuario
+    // /.col-lg-12
+  // /.row
+  .row
+    .col-lg-12
+      .panel.panel-default
+        .panel-heading
+          | DataTables Advanced Tables
+        // /.panel-heading
+        .panel-body
+          table#dataTables-users.table.table-striped.table-bordered.table-hover(width='100%')
+            thead
+              tr
+                th Nombre
+                th Apellido
+                th Documento
+                th Familia
+                th E-mail
+                th Acciones
+              tbody
+                each user in users
+                 tr
+                  td=user.name
+                  td=user.last_name
+                  td=user.identification
+                  td=user.family
+                  td=user.email
+                  td.center
+                    a(href=`/users/edit/`+user.id  )
+                      i.glyphicon.glyphicon-edit
+                    i.fa.fa-eye
+
+block JS
+   script(src='/vendor/datatables/js/jquery.dataTables.min.js')
+   script(src='/vendor/datatables-plugins/dataTables.bootstrap.min.js')
+   script(src='/vendor/datatables-responsive/dataTables.responsive.js')
+   script(src='/dist/js/sb-admin-2.js')
+   script.
+    $(document).ready(function () {
+      $('#dataTables-users').DataTable({
+        responsive: true
+      });
+      $('#users-new').click(function () {
+        location.href = "/users/new";
+      });
+    });
+   script.
+     console.log(#{hola})

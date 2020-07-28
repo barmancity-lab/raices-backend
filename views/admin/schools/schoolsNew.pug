@@ -1,0 +1,113 @@
+extends ../layout
+block content
+ .row
+   .col-lg-12
+     h1.page-header Alta /Modificaci&oacute;n escuela
+   // /.col-lg-12
+ // /.row
+ .row
+   .panel-body#notifications
+   .col-lg-12
+     .panel.panel-default
+       .panel-heading
+         | Datos de la escuela
+       .panel-body
+         .row
+           form#form(role='form' enctype="multipart/form-data")
+             // /.col-lg-6 (nested)
+             .col-lg-5
+               .form-group.input-group
+                 span.input-group-addon Nombre
+                 input#identification.form-control(type='text' name='name')
+               .form-group.input-group
+                 span.input-group-addon Dirección
+                 input#name.form-control(type='text' name='address')
+               .form-group.input-group
+                 span.input-group-addon Telefono
+                 input#surname.form-control(type='text' name='phone')
+               .form-group
+                 label Nivel
+                 label.checkbox-inline
+                   input(type='checkbox' name='level[initial]' value='1')
+                   | Jardin
+                 label.checkbox-inline
+                   input(type='checkbox' name='level[primary]' value='1')
+                   | Primaria
+                 label.checkbox-inline
+                   input(type='checkbox' name='level[secondary]' value='1')
+                   | Secundaria
+
+
+             .col-lg-4
+               .form-group.input-group
+                 span.input-group-addon Código
+                 input#family.form-control(type='text' name='code')
+               .form-group.input-group
+                 span.input-group-addon @Email
+                 input#email.form-control(type='text' name='email')
+               .form-group
+                 input.form-control#file(type='file' name='image')
+               .form-group.input-group
+                button#btn-submit.btn.btn-default(type='button') Guardar
+             .col.lg-2
+               img#image_upload_preview
+
+               input#schoolId(type='hidden' name='schoolId' value='NEW')
+
+block JS
+ script.
+   function readURL(input) {
+     if (input.files && input.files[0]) {
+       var reader = new FileReader();
+
+       reader.onload = function (e) {
+         $('#image_upload_preview').attr('src', e.target.result);
+       }
+
+       reader.readAsDataURL(input.files[0]);
+     }
+   }
+
+   $("#file").change(function () {
+     readURL(this);
+   });
+
+
+
+
+
+   $('#btn-submit').click(function () {
+
+     var form = $('#form')[0];
+     var data = new FormData(form);
+
+     var url = "/admin/schools/store";
+     $.ajax({
+       type: "POST",
+       url: url,
+       data: data,
+       enctype: 'multipart/form-data',
+       processData: false,
+       contentType: false,
+       cache: false,
+       success: function (response) {
+         let notification = '';
+         if (response.error === true) {
+           notification = `<div class="alert alert-danger alert-dismissable ">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <p>El usuario ya existe</p>
+                           </div>`
+         }
+         else {
+           $('#notificationSuccess').removeClass('hidden')
+           notification = ` <div class="alert alert-success alert-dismissable" id="notificationSuccess">
+                             <a href="/admin/schools/list"><button type="button" class="btn btn-default close">
+                                Regresar al listado</button>
+                              </a>
+                              <p>Escuela creado sin errores</p>
+                            </div>`;
+         }
+         $('#notifications').html(notification);
+       }
+     });
+   });

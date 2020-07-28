@@ -1,0 +1,76 @@
+extends ../layout
+block content
+ .row
+   .col-lg-12
+     h1.page-header Alta /Modificaci&oacute;n usuario
+   // /.col-lg-12
+ // /.row
+ .row
+   .panel-body#notifications
+   .col-lg-12
+     .panel.panel-default
+       .panel-heading
+         | Datos de usuario
+       .panel-body
+         .row
+           form#form(role='form')
+             // /.col-lg-6 (nested)
+             .col-lg-6
+               .form-group.input-group
+                 span.input-group-addon DNI
+                 input#identification.form-control(type='text' name='identification')
+               .form-group.input-group
+                 span.input-group-addon Nombre
+                 input#name.form-control(type='text' name='name')
+               .form-group.input-group
+                 span.input-group-addon Apellido
+                 input#surname.form-control(type='text' name='lastName')
+             .col-lg-6
+               .form-group.input-group
+                 span.input-group-addon Familia
+                 input#family.form-control(type='text' name='family')
+               .form-group.input-group
+                 span.input-group-addon @Email
+                 input#email.form-control(type='text' name='email')
+               .form-group.input-group
+                 span.input-group-addon Contrae&ntilde;a
+                 input#password.form-control(type='text' name='password')
+
+               .form-group
+                 select#sel1.form-control(name='role')
+                   option(value='0' disabled=disabled) Tipo de usuario
+                   each role in roles
+                     option(value=role.id )=role.role
+
+               button#btn-submit.btn.btn-default(type='button') Guardar
+               input#userId(type='hidden' name='userId' value='NEW')
+
+block JS
+ script.
+   $('#btn-submit').click(function () {
+     var url = "/users/store";
+     $.ajax({
+       type: "POST",
+       url: url,
+       data: $("#form").serialize(),
+       success: function (response) {
+         let notification = '';
+         if (response.error === true) {
+           notification = `<div class="alert alert-danger alert-dismissable ">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <p>El usuario ya existe</p>
+                           </div>`
+         }
+         else {
+           $('#notificationSuccess').removeClass('hidden')
+           notification = ` <div class="alert alert-success alert-dismissable" id="notificationSuccess">
+                             <a href="/users/list"><button type="button" class="btn btn-default close">
+                                Regresar al listado</button>
+                              </a>
+                              <p>Usuario creado sin errores</p>
+                            </div>`;
+         }
+         $('#notifications').html(notification);
+       }
+     });
+   });
