@@ -54,6 +54,9 @@ let studentsController = require('../controllers/students.js');
 // Llamo al controllador admin
 let adminController = require('../controllers/admin.js');
 
+// Llamo al controllador admin
+let transactionsController = require('../controllers/transactions.js');
+
 
 /******************Ruteos**************************/
 
@@ -142,6 +145,9 @@ router.post('/students/store', requireRole('students', 'store'), studentsControl
 
 // Realiza el ruteo hacia el controlador users/edit
 router.get('/students/edit/:studentId', requireRole('students', 'edit'), studentsController.studentsEdit);
+
+// Realiza el ruteo hacia el controlador transaction/store
+router.get('/trasactions/new', transactionsController.transactionNew);
 
 
 /************************Autenticacion************************************/

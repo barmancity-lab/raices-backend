@@ -2,16 +2,19 @@
  *
  * roles.js
  *
- * Created on 04th august
+ * Created on 26th august
  * Copyright © 2020
  * Author Federico Puiggros <b>federico_puiggros@hotmail.com</b>
  *
  */
+const mercadopago = require('mercadopago');
 
 // Este modulo implementa las transacciones
 'use strict';
 
-
+mercadopago.configure({
+  access_token: 'TEST-5671795431642796-062421-07f2c0cbd9821e1b15ee0c2151a07789-89909518'
+});
 let db = require('../models');
 
 // Renderiza el listado de transacciones
@@ -26,28 +29,50 @@ function transactionsList(req, res) {
 
 
 // Inserto una transaccion
-function transactionStore(req, res) {
+function transactionNew(req, res) {
 
-  // Llamo al modelo para crear el objeto con los datos a insertar
-  db.role.create({
-    amount: req.body.roleName,
-    mp_rq: screenPermissions,
-    // Si se inserto correctamente devuelve un json con los datos ingresados
-  }).then(function (item) {
+  let preference = {
+    items: [
+      {
+        title: 'Donacion',
+        unit_price: 100,
+        quantity: 1,
+      }
+    ]
+  };
 
-    let response = { 'data': item, 'error': false, 'result': true, "dataError": {} }
-    res.json(response);
+  mercadopago.preferences.create(preference)
+    .then(function (response) {
+      global.id = response.body.id;
 
-    // Si no se inserto correctamente devuelve un json con el error
-  }).catch(function (err) {
-    let dataError = {};
+      // Llamo al modelo para crear el objeto con los datos a insertar
+      db.transactions.create({
+        amount: 100,
+        mp_rq: JSON.stringify(response),
+        // Si se inserto correctamente devuelve un json con los datos ingresados
+      }).then(function (item) {
+        
+        let data = { 'data': response, 'error': false, 'result': true, "dataError": {} }
+        res.json(data);
 
-    dataError.errorMsj = err.message;
-    dataError.errorCode = err.code;
+        // Si no se inserto correctamente devuelve un json con el error
+      }).catch(function (err) {
+        let dataError = {};
 
-    let response = ({ "data": '', "error": true, 'result': false, "dataError": dataError });
-    res.json(response);
-  });
+        dataError.errorMsj = err.message;
+        dataError.errorCode = err.code;
+
+        let response = ({ "data": '', "error": true, 'result': false, "dataError": dataError });
+        res.json(response);
+      });
+
+    }).catch(function (err) {
+      let dataError = {};
+      dataError.errorMsj = err.message;
+      dataError.errorCode = err.code;
+      let response = ({ "data": '', "error": true, 'result': false, "dataError": dataError });
+      res.json(response);
+    });
 }
 
 
@@ -55,6 +80,6 @@ function transactionStore(req, res) {
 //Exporta la funciones para ser llamadas externamente.
 module.exports = {
   transactionsList,
-  transactionStore
+  transactionNew
 };
 
