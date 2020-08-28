@@ -48,11 +48,11 @@ function transactionNew(req, res) {
       // Llamo al modelo para crear el objeto con los datos a insertar
       db.transactions.create({
         amount: 100,
-        mp_rq: JSON.stringify(response),
+        rq_mp: JSON.stringify(response),
         // Si se inserto correctamente devuelve un json con los datos ingresados
       }).then(function (item) {
         
-        let data = { 'data': response, 'error': false, 'result': true, "dataError": {} }
+        let data = { 'global_id': global.id, 'error': false, 'result': true, "dataError": {} }
         res.json(data);
 
         // Si no se inserto correctamente devuelve un json con el error
